@@ -1,0 +1,39 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  telegramId String   @unique @map("telegram_id")
+  username   String?  @db.VarChar(255)
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  subscriptionsAsSubscriber Subscription[] @relation("SubscriberRelation")
+
+  subscriptionsAsTarget Subscription[] @relation("TargetRelation")
+
+  @@map("users")
+}
+
+model Subscription {
+  id Int @id @default(autoincrement())
+
+  subscriber   User @relation("SubscriberRelation", fields: [subscriberId], references: [id])
+  subscriberId Int  @map("subscriber_id")
+
+  target   User @relation("TargetRelation", fields: [targetId], references: [id])
+  targetId Int  @map("target_id")
+
+  chatId String @map("chat_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([subscriberId, targetId])
+  @@map("subscriptions")
+}
