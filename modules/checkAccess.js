@@ -10,7 +10,6 @@ const redis = new Redis({
 
 export async function checkAccess(userId) {
 
-    userId = 347283122;
     const cacheKey = `subscription:${userId}`;
     const cachedData = await redis.get(cacheKey);
 

@@ -21,8 +21,11 @@ export async function handleMessage(prisma, bot, msg) {
             },
         });
 
+
+
         for (const subscriber of subscriptions) {
-            await bot.sendMessage(subscriber.subscriber.telegramId, `${msg.from.username} (${msg.chat.title}):\n${msg.text}`, {
+
+            const inline = {
                 reply_markup: {
                     inline_keyboard: [
                         [
@@ -37,7 +40,19 @@ export async function handleMessage(prisma, bot, msg) {
                         ],
                     ],
                 },
-            });
+            }
+
+            if (msg.text) {
+                await bot.sendMessage(subscriber.subscriber.telegramId, `${msg.from.username} (${msg.chat.title}):\n${msg.text}`,inline);
+            }
+            if (msg.photo) {
+                const fileId = msg.photo[msg.photo.length - 1].file_id;
+                await bot.sendPhoto(subscriber.subscriber.telegramId, fileId, {
+                    caption: `${msg.from.username} (${msg.chat.title}): отправил фото.`,
+                    inline
+                });
+
+            }
         }
     } catch (error) {
         console.error('Ошибка обработки сообщения:', error);
