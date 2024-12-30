@@ -1,12 +1,8 @@
 import Redis from 'ioredis';
 import dayjs from "dayjs";
+import { log } from 'console';
 
-const redis = new Redis({
-    host: process.env.REDIS_HOST,
-    port: process.env.REDIS_PORT,
-    // username: process.env.REDIS_USERNAME,
-    password: process.env.REDIS_PASSWORD,
-});
+const redis = new Redis(process.env.REDIS_URI);
 
 export async function checkAccess(userId) {
 
@@ -18,11 +14,11 @@ export async function checkAccess(userId) {
     if (cachedData) {
         userData = JSON.parse(cachedData);
     } else {
-
-
         try {
             const req = await fetch(`https://bot.a01k.io/api/user/${userId}`);
             const response = await req.json();
+            
+            console.log(response);
 
             if (response.code === 404) {
                 userData = {
@@ -40,11 +36,8 @@ export async function checkAccess(userId) {
                 access: false
             }
         }
-
         await redis.set(cacheKey, JSON.stringify(userData), 'EX', 86000);
-
     }
-
     if (userData.access) {
         const now = dayjs();
         const start = dayjs(userData.alpha.date_start_subscription);
@@ -54,6 +47,5 @@ export async function checkAccess(userId) {
             return true
         }
     }
-
     return false;
 }

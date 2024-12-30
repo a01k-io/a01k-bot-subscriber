@@ -1,8 +1,6 @@
 export async function unsubscribeCommand(prisma, bot, query) {
     const data = query.data;
-
-
-
+    
     if (data.startsWith('unsubscribe_')) {
         const [, targetId, subscriberId, chatId] = data.split('_');
         console.log(chatId)

@@ -4,7 +4,7 @@ export async function subscribeCommand(prisma, bot, msg) {
     const chatId = msg.chat.id.toString();
 
     if (!msg.reply_to_message || !msg.reply_to_message.from) {
-        return bot.sendMessage(chatId, "Пожалуйста, перешлите сообщение пользователя, на которого хотите подписаться и укажите /sub");
+        return bot.sendMessage(chatId, "Пожалуйста, ответьте на сообщение пользователя, на которого хотите подписаться и укажите /sub");
     }
 
     try {
