@@ -1,5 +1,5 @@
 
-FROM node:18-alpine AS builder
+FROM node:20.14-alpine AS builder
 
 WORKDIR /usr/src/app
 
@@ -11,7 +11,7 @@ COPY . .
 
 RUN npx prisma generate
 
-FROM node:18-alpine AS production
+FROM node:20.14-alpine AS production
 
 WORKDIR /usr/src/app
 
