@@ -1,17 +1,18 @@
 
-export const getUser = async (prisma,id) => {
-    const telegramId = id.toString()
-    let user = await prisma.user.findUnique({
+export const getUser = async (prisma,user) => {
+
+    const telegramId = user.id.toString()
+    let userModel = await prisma.user.findUnique({
         where: {telegramId}
     })
 
-    if (!user) {
-        user = await prisma.user.create({
+    if (!userModel) {
+        userModel = await prisma.user.create({
             data: {
-                username:  'str',
+                username: user.username ?? null,
                 telegramId
             }
         })
     }
-    return user
+    return userModel
 }

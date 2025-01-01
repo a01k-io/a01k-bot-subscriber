@@ -4,7 +4,8 @@ export async function handleMessage(prisma, bot, msg) {
     const chatId = msg.chat.id.toString();
 
     try {
-        const user = await getUser(prisma, msg.from.id);
+        const user = await getUser(prisma, msg.from);
+
 
         const subscriptions = await prisma.subscription.findMany({
             where: {

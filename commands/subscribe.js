@@ -1,6 +1,7 @@
 import {getUser} from "../modules/getUser.js";
 
 export async function subscribeCommand(prisma, bot, msg) {
+
     const chatId = msg.chat.id.toString();
 
     if (!msg.reply_to_message || !msg.reply_to_message.from) {
@@ -8,8 +9,8 @@ export async function subscribeCommand(prisma, bot, msg) {
     }
 
     try {
-        const targetUser = await getUser(prisma, msg.reply_to_message.from.id);
-        const fromUser = await getUser(prisma, msg.from.id);
+        const targetUser = await getUser(prisma, msg.reply_to_message.from);
+        const fromUser = await getUser(prisma, msg.from);
 
 
         if (!targetUser) {

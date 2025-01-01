@@ -9,11 +9,10 @@ datasource db {
 }
 
 model User {
-  id         Int      @id @default(autoincrement())
-  telegramId String   @unique @map("telegram_id")
-  username   String?  @db.VarChar(255)
-  createdAt  DateTime @default(now()) @map("created_at")
-
+  id                        Int            @id @default(autoincrement())
+  telegramId                String         @unique @map("telegram_id")
+  username                  String?        @db.VarChar(255)
+  createdAt                 DateTime       @default(now()) @map("created_at")
   subscriptionsAsSubscriber Subscription[] @relation("SubscriberRelation")
 
   subscriptionsAsTarget Subscription[] @relation("TargetRelation")
