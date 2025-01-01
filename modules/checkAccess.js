@@ -20,15 +20,22 @@ export async function checkAccess(userId) {
             
             console.log(response);
 
-            if (response.code === 404) {
+            if (!req.ok) {
                 userData = {
                     access: false,
-                }
-            }
-            if (response.alpha) {
-                userData = {
-                    access: true,
-                    alpha: response.alpha
+                };
+            } else {
+                const response = await req.json();
+
+                if (response.alpha) {
+                    userData = {
+                        access: true,
+                        alpha: response.alpha
+                    };
+                } else {
+                    userData = {
+                        access: false,
+                    };
                 }
             }
         } catch (e) {
