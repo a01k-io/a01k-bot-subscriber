@@ -1,6 +1,5 @@
 import Redis from 'ioredis';
 import dayjs from "dayjs";
-import { log } from 'console';
 
 const redis = new Redis(process.env.REDIS_URI);
 
@@ -17,27 +16,8 @@ export async function checkAccess(userId) {
         try {
             const req = await fetch(`https://bot.a01k.io/api/user/${userId}`);
             const response = await req.json();
-            
-            console.log(response);
+            userData = req.ok && response.alpha ? {access: true, alpha: response.alpha} : {access: false}
 
-            if (!req.ok) {
-                userData = {
-                    access: false,
-                };
-            } else {
-                const response = await req.json();
-
-                if (response.alpha) {
-                    userData = {
-                        access: true,
-                        alpha: response.alpha
-                    };
-                } else {
-                    userData = {
-                        access: false,
-                    };
-                }
-            }
         } catch (e) {
             userData = {
                 access: false
