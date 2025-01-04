@@ -32,9 +32,5 @@ bot.on('callback_query', async (query) => {
 
 
 bot.on('message', async (msg) => {
-    if (!await checkAccess(msg.from.id)) {
-        return
-    }
-
     await handleMessage(prisma, bot, msg);
 });
