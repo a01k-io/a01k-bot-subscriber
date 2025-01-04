@@ -35,7 +35,6 @@ bot.on('message', async (msg) => {
     if (!await checkAccess(msg.from.id)) {
         return
     }
-    const  res = await checkAccess(msg.from.id)
-    console.log(res)
+
     await handleMessage(prisma, bot, msg);
 });
