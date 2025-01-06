@@ -31,6 +31,14 @@ bot.on('callback_query', async (query) => {
 });
 
 
+bot.onText(/\/start/, async (msg) => {
+    console.log(msg)
+    if (!await checkAccess(msg.from.id)) {
+        return
+    }
+    await bot.sendMessage(msg.chat.id, 'Привет! Я бот, который поможет тебе подписаться на сообщения пользователей. Для того, чтобы подписаться на сообщения пользователя, напиши /sub в нужном чате.');
+});
+
 bot.on('message', async (msg) => {
     await handleMessage(prisma, bot, msg);
 });
