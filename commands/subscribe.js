@@ -1,11 +1,15 @@
 import {getUser} from "../modules/getUser.js";
+import {deleteMessages} from "../modules/deleteMessages.js";
 
 export async function subscribeCommand(prisma, bot, msg) {
 
     const chatId = msg.chat.id.toString();
 
     if (!msg.reply_to_message || !msg.reply_to_message.from) {
-        return bot.sendMessage(chatId, "Пожалуйста, ответьте на сообщение пользователя, на которого хотите подписаться и укажите /sub");
+        const errorMsg = await  bot.sendMessage(chatId, "Пожалуйста, ответьте на сообщение пользователя, на которого хотите подписаться и укажите /sub");
+        await deleteMessages(bot,chatId,[msg.message_id,errorMsg.message_id])
+        return;
+
     }
 
     try {
@@ -14,7 +18,9 @@ export async function subscribeCommand(prisma, bot, msg) {
 
 
         if (!targetUser) {
-            return bot.sendMessage(chatId, "Пользователь не найден.");
+            const errorMsg = await bot.sendMessage(chatId, "Пользователь не найден.");
+            await deleteMessages(bot,chatId,[msg.message_id,errorMsg.message_id])
+            return;
         }
 
         const existingSubscription = await prisma.subscription.findUnique({
@@ -27,12 +33,16 @@ export async function subscribeCommand(prisma, bot, msg) {
         });
 
         if (existingSubscription) {
-            return bot.sendMessage(chatId, "Вы уже подписаны на @" + targetUser.username);
+            const errorMsg = await bot.sendMessage(chatId, "Вы уже подписаны на @" + targetUser.username);
+            await deleteMessages(bot,chatId,[msg.message_id,errorMsg.message_id])
+            return;
         }
 
 
         if (fromUser.id === targetUser.id) {
-            return bot.sendMessage(chatId, "Вы не можете подписаться сами на себя");
+            const errorMsg = await bot.sendMessage(chatId, "Вы не можете подписаться сами на себя");
+            await deleteMessages(bot,chatId,[msg.message_id,errorMsg.message_id])
+            return;
         }
 
 
@@ -48,14 +58,8 @@ export async function subscribeCommand(prisma, bot, msg) {
             reply_to_message_id: msg.message_id
         });
 
-        setTimeout(async () => {
-            try {
-                await bot.deleteMessage(chatId, msg.message_id);
-                await bot.deleteMessage(chatId, checkMsg.message_id);
-            } catch (error) {
-                console.error('Не удалось удалить сообщение(я): ', error);
-            }
-        }, 3000);
+        await deleteMessages(bot,chatId,[msg.message_id,checkMsg.message_id])
+
     } catch (error) {
         console.error(error);
         await bot.sendMessage(chatId, "Произошла ошибка при обработке запроса.");
