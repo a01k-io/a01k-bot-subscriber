@@ -26,6 +26,7 @@ export async function subscribeCommand(prisma, bot, msg) {
         const existingSubscription = await prisma.subscription.findUnique({
             where: {
                 subscriberId_targetId: {
+                    chatId
                     subscriberId: fromUser.id,
                     targetId: targetUser.id,
                 },
