@@ -16,9 +16,9 @@ await bot.setMyCommands([
 
 bot.onText(/\/sub/, async (msg) => {
 
-    // if (!await checkAccess(msg.from.id)) {
-    //     return
-    // }
+    if (!await checkAccess(msg.from.id)) {
+        return
+    }
     await subscribeCommand(prisma, bot, msg);
 });
 
