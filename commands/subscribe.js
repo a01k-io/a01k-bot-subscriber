@@ -23,13 +23,11 @@ export async function subscribeCommand(prisma, bot, msg) {
             return;
         }
 
-        const existingSubscription = await prisma.subscription.findUnique({
+        const existingSubscription = await prisma.subscription.findFirst({
             where: {
-                subscriberId_targetId: {
                     chatId,
                     subscriberId: fromUser.id,
                     targetId: targetUser.id,
-                },
             },
         });
 
