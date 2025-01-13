@@ -33,6 +33,5 @@ model Subscription {
 
   createdAt DateTime @default(now()) @map("created_at")
 
-  @@unique([subscriberId, targetId])
   @@map("subscriptions")
 }
