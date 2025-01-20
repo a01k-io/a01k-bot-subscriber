@@ -45,6 +45,14 @@ export async function subscribeCommand(prisma, bot, msg) {
         }
 
 
+
+
+        try {
+            await bot.sendMessage(fromUser.id, 'Вы подписались на @' + targetUser.username);
+        } catch (error) {
+            await bot.sendMessage(chatId, 'Чтобы подписаться, сначала перейдите в бот и начните диалог.');
+        }
+
         await prisma.subscription.create({
             data: {
                 subscriberId: Number(fromUser.id),
