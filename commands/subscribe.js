@@ -37,20 +37,16 @@ export async function subscribeCommand(prisma, bot, msg) {
             return;
         }
 
-
         if (fromUser.id === targetUser.id) {
             const errorMsg = await bot.sendMessage(chatId, "Вы не можете подписаться сами на себя");
             await deleteMessages(bot,chatId,[msg.message_id,errorMsg.message_id])
             return;
         }
 
-
-
-
         try {
             await bot.sendMessage(fromUser.id, 'Вы подписались на @' + targetUser.username);
         } catch (error) {
-            await bot.sendMessage(chatId, 'Чтобы подписаться, сначала перейдите в бот и начните диалог.');
+            await bot.sendMessage(chatId, 'Чтобы подписаться, вам нужно перейти в личные сообщения с ботом @a01k_sub_bot и запустить его!');
         }
 
         await prisma.subscription.create({
