@@ -5,8 +5,6 @@ export async function handleMessage(prisma, bot, msg) {
 
     try {
         const user = await getUser(prisma, msg.from);
-
-
         const subscriptions = await prisma.subscription.findMany({
             where: {
                 targetId: user.id,
@@ -22,10 +20,7 @@ export async function handleMessage(prisma, bot, msg) {
             },
         });
 
-
-
         for (const subscriber of subscriptions) {
-
             const inline = {
                 reply_markup: {
                     inline_keyboard: [
