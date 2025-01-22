@@ -24,4 +24,4 @@ COPY --from=builder /usr/src/app ./
 COPY --from=builder /usr/src/app/prisma ./prisma
 COPY --from=builder /usr/src/app/.env ./
 
-CMD ["pm2-runtime", "app.js"]
+CMD ["pm2-runtime", "index.js"]
