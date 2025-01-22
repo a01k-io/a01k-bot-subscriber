@@ -17,12 +17,11 @@ RUN npm install --omit=dev
 
 
 RUN npm install pm2 -g
-
-RUN pm2 link ene1cub62a8sv8u cwpw2ym276smyww
-
+ENV PM2_PUBLIC_KEY cwpw2ym276smyww
+ENV PM2_SECRET_KEY ene1cub62a8sv8u
 
 COPY --from=builder /usr/src/app ./
 COPY --from=builder /usr/src/app/prisma ./prisma
 COPY --from=builder /usr/src/app/.env ./
 
-CMD ["pm2", "start", "app.js", "--no-daemon"]
+CMD ["pm2-runtime", "app.js"]
