@@ -46,7 +46,8 @@ export async function subscribeCommand(prisma, bot, msg) {
         try {
             await bot.sendMessage(fromUser.id, 'Вы подписались на @' + targetUser.username);
         } catch (error) {
-            await bot.sendMessage(chatId, 'Чтобы подписаться, вам нужно перейти в личные сообщения с ботом @a01k_sub_bot и запустить его!');
+            const errorMsg =   await bot.sendMessage(chatId, 'Чтобы подписаться, вам нужно перейти в личные сообщения с ботом @a01k_sub_bot и запустить его!');
+            await deleteMessages(bot,chatId,[errorMsg.message_id])
         }
 
         await prisma.subscription.create({
