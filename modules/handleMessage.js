@@ -1,4 +1,5 @@
 import {getUser} from "./getUser.js";
+import {checkAccess} from "./checkAccess.js";
 
 export async function handleMessage(prisma, bot, msg) {
     const chatId = msg.chat.id.toString();
@@ -36,6 +37,10 @@ export async function handleMessage(prisma, bot, msg) {
                         ],
                     ],
                 },
+            }
+
+            if (!await checkAccess(subscriber.subscriber.telegramId)) {
+                continue
             }
 
             if (msg.text) {
