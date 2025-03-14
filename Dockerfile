@@ -22,6 +22,5 @@ ENV PM2_SECRET_KEY ene1cub62a8sv8u
 
 COPY --from=builder /usr/src/app ./
 COPY --from=builder /usr/src/app/prisma ./prisma
-COPY --from=builder /usr/src/app/.env ./
 
 CMD ["pm2-runtime", "index.js"]
