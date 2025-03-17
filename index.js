@@ -17,6 +17,7 @@ await bot.setMyCommands([
 bot.onText(/\/sub/, async (msg) => {
 
     if (!await checkAccess(msg.from.id)) {
+        await bot.sendMessage(msg.chat.id,'No access')
         return
     }
     await subscribeCommand(prisma, bot, msg);

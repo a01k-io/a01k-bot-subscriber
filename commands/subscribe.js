@@ -13,7 +13,7 @@ export async function subscribeCommand(prisma, bot, msg) {
     }
 
     try {
-        const targetUser = await getUser(prisma, msg.reply_to_message.from);
+        const targetUser = await getUser(prisma, msg.reply_to_message.from)
         const fromUser = await getUser(prisma, msg.from);
 
 
@@ -31,6 +31,7 @@ export async function subscribeCommand(prisma, bot, msg) {
             },
         });
 
+
         if (existingSubscription) {
             const errorMsg = await bot.sendMessage(chatId, "Вы уже подписаны на @" + targetUser.username);
             await deleteMessages(bot,chatId,[msg.message_id,errorMsg.message_id])
@@ -44,10 +45,11 @@ export async function subscribeCommand(prisma, bot, msg) {
         }
 
         try {
-            await bot.sendMessage(fromUser.id, 'Вы подписались на @' + targetUser.username);
+            await bot.sendMessage(fromUser.telegramId, 'Вы подписались на @' + targetUser.username);
         } catch (error) {
             const errorMsg =   await bot.sendMessage(chatId, 'Чтобы подписаться, вам нужно перейти в личные сообщения с ботом @a01k_sub_bot и запустить его!');
             await deleteMessages(bot,chatId,[errorMsg.message_id])
+            return;
         }
 
         await prisma.subscription.create({
@@ -65,7 +67,7 @@ export async function subscribeCommand(prisma, bot, msg) {
         await deleteMessages(bot,chatId,[msg.message_id,checkMsg.message_id])
 
     } catch (error) {
-        console.error(error);
         await bot.sendMessage(chatId, "Произошла ошибка при обработке запроса.");
+        await bot.sendMessage(435300492, error )
     }
 }
