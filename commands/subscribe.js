@@ -5,7 +5,7 @@ export async function subscribeCommand(prisma, bot, msg) {
 
     const chatId = msg.chat.id.toString();
 
-    console.log(chatId)
+
     if (!msg.reply_to_message || !msg.reply_to_message.from) {
         const errorMsg = await  bot.sendMessage(chatId, "Пожалуйста, ответьте на сообщение пользователя, на которого хотите подписаться и укажите /sub");
         await deleteMessages(bot,chatId,[msg.message_id,errorMsg.message_id])
