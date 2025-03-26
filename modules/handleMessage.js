@@ -56,6 +56,6 @@ export async function handleMessage(prisma, bot, msg) {
             }
         }
     } catch (error) {
-        console.error('Ошибка обработки сообщения', chatId, msg);
+            console.error('Ошибка обработки сообщения', chatId, msg);
     }
 }
