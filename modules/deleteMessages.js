@@ -5,7 +5,7 @@ export async function deleteMessages(bot, chatId, messageIds) {
                 await bot.deleteMessage(chatId, messageId);
             }
         } catch (error) {
-            console.error('Не удалось удалить сообщения: ', error);
+            console.error('Не удалось удалить сообщения: ', {chatId, messageIds});
         }
     }, 3000);
 }
