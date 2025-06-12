@@ -30,7 +30,7 @@ export async function handleMessage(prisma, bot, msg) {
                             [
                                 {
                                     text: '🔗',
-                                    url: `https://t.me/c/${msg.chat.username || msg.chat.id.toString().replace('-100', '')}/${msg.message_id}`,
+                                    url: `https://t.me/c/${msg.chat.username || msg.chat.id.toString().replace('-100', '')}${msg.message_thread_id && msg.message_thread_id !== 0 ? `/${msg.message_thread_id}` : ''}/${msg.message_id}`,
                                 },
                                 {
                                     text: '❌',
