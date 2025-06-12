@@ -40,6 +40,7 @@ export async function handleMessage(prisma, bot, msg) {
                         ],
                     },
                 }
+                console.log("inline url", inline.reply_markup.inline_keyboard[0][0].url)
 
                 if (!await checkAccess(subscriber.subscriber.telegramId)) {
                     continue
