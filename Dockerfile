@@ -1,26 +1,31 @@
-FROM node:20.14-alpine AS builder
+# Build stage
+FROM golang:1.23-alpine AS builder
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
-COPY package*.json ./
-RUN npm install
+# Install build dependencies
+RUN apk add --no-cache git gcc musl-dev
 
+# Copy go mod files
+COPY go.mod go.sum ./
+RUN go mod download
+
+# Copy source code
 COPY . .
-RUN npx prisma generate
 
-FROM node:20.14-alpine AS production
+# Build the application
+RUN CGO_ENABLED=1 GOOS=linux go build -a -installsuffix cgo -o bot .
 
-WORKDIR /usr/src/app
+# Runtime stage
+FROM alpine:latest
 
-COPY package*.json ./
-RUN npm install --omit=dev
+WORKDIR /root/
 
+# Install ca-certificates for HTTPS requests
+RUN apk --no-cache add ca-certificates
 
-RUN npm install pm2 -g
-ENV PM2_PUBLIC_KEY cwpw2ym276smyww
-ENV PM2_SECRET_KEY ene1cub62a8sv8u
+# Copy the binary from builder
+COPY --from=builder /app/bot .
 
-COPY --from=builder /usr/src/app ./
-COPY --from=builder /usr/src/app/prisma ./prisma
-
-CMD ["pm2-runtime", "index.js"]
+# Run the bot
+CMD ["./bot"]
