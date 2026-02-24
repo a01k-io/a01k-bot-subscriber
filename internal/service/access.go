@@ -32,6 +32,16 @@ type GlobalUserResponseAPI struct {
 	Integrations  map[string]string        `json:"integrations"`
 }
 
+type SubscriptionResponse struct {
+	Id          int       `json:"id"`
+	UserID      int       `json:"user_id"`
+	Logo        string    `json:"logo"`
+	ProductType string    `json:"product_type"`
+	StartedAt   time.Time `json:"started_at"`
+	ExpiresAt   time.Time `json:"expires_at"`
+	Active      bool      `json:"active"`
+}
+
 type AccessService struct {
 	redis      *redis.Client
 	httpClient *http.Client
@@ -50,31 +60,34 @@ func NewAccessService(redisClient *redis.Client, cfg *config.Config) *AccessServ
 
 // CheckAccess проверяет доступ пользователя с кешированием
 func (s *AccessService) CheckAccess(ctx context.Context, userID int64) (bool, error) {
-	cacheKey := fmt.Sprintf("subscription:%d", userID)
+	cacheKey := fmt.Sprintf("subscriptions:%d", userID)
 
 	// Проверка в кеше
 	cachedData, err := s.redis.Get(ctx, cacheKey).Result()
 	if err == nil {
-		// Данные найдены в кеше
-		var userData GlobalUserResponseAPI
+		var userData SubscriptionResponse
 		if err := json.Unmarshal([]byte(cachedData), &userData); err == nil {
 			return s.checkAccessDates(&userData), nil
 		}
 	}
 
-	// Данные не найдены в кеше или произошла ошибка, делаем запрос к API
 	userData, err := s.fetchUserData(ctx, userID)
 	if err != nil {
 		return false, fmt.Errorf("failed to fetch user data: %w", err)
 	}
 
+	subscriptionData, err := s.fetchSubscriptions(ctx, userData.ID)
+	if err != nil {
+		return false, fmt.Errorf("failed to fetch subscriptions: %w", err)
+	}
+
 	// Сохраняем в кеш
-	jsonData, err := json.Marshal(userData)
+	jsonData, err := json.Marshal(subscriptionData)
 	if err == nil {
 		_ = s.redis.Set(ctx, cacheKey, jsonData, 5*time.Minute).Err()
 	}
 
-	return s.checkAccessDates(userData), nil
+	return s.checkAccessDates(subscriptionData), nil
 }
 
 func (s *AccessService) fetchUserData(ctx context.Context, userID int64) (*GlobalUserResponseAPI, error) {
@@ -110,16 +123,46 @@ func (s *AccessService) fetchUserData(ctx context.Context, userID int64) (*Globa
 	return &apiResponse, nil
 }
 
-func (s *AccessService) checkAccessDates(userData *GlobalUserResponseAPI) bool {
-	if userData.Subscriptions == nil || len(userData.Subscriptions) == 0 {
-		return false
+func (s *AccessService) fetchSubscriptions(ctx context.Context, userID int64) (*SubscriptionResponse, error) {
+	url := fmt.Sprintf(s.cfg.API+"/user/subscriptions/%d", userID)
+
+	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("X-Sub-Key", s.cfg.XSubKey)
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := s.httpClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
 	}
 
-	alphaData, ok := userData.Subscriptions["alpha"]
-	if !ok {
-		return false
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("failed to fetch user data: %s", string(body))
 	}
 
+	var apiResponse []*SubscriptionResponse
+	if err := json.Unmarshal(body, &apiResponse); err != nil {
+		return nil, err
+	}
+
+	for _, a := range apiResponse {
+		if a.ProductType == "alpha" {
+			return a, nil
+		}
+	}
+
+	return nil, fmt.Errorf("failed to fetch subscriptions: %s", string(body))
+}
+
+func (s *AccessService) checkAccessDates(alphaData *SubscriptionResponse) bool {
 	now := time.Now()
-	return now.After(alphaData.DateStartSubscription) && now.Before(alphaData.DateEndSubscription)
+	return now.After(alphaData.StartedAt) && now.Before(alphaData.ExpiresAt)
 }
