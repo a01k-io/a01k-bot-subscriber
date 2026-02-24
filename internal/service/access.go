@@ -93,7 +93,7 @@ func (s *AccessService) CheckAccess(ctx context.Context, userID int64) (bool, er
 func (s *AccessService) fetchUserData(ctx context.Context, userID int64) (*GlobalUserResponseAPI, error) {
 	url := fmt.Sprintf(s.cfg.API+"/api/v2/internal/user/%d?bot_id=5383263408", userID)
 
-	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, http.NoBody)
 	if err != nil {
 		return nil, err
 	}
@@ -124,9 +124,9 @@ func (s *AccessService) fetchUserData(ctx context.Context, userID int64) (*Globa
 }
 
 func (s *AccessService) fetchSubscriptions(ctx context.Context, userID int64) (*SubscriptionResponse, error) {
-	url := fmt.Sprintf(s.cfg.API+"/user/subscriptions/%d", userID)
+	url := fmt.Sprintf(s.cfg.API+"/api/v2/internal/user/subscriptions/%d", userID)
 
-	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, http.NoBody)
 	if err != nil {
 		return nil, err
 	}
