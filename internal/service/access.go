@@ -71,7 +71,7 @@ func (s *AccessService) CheckAccess(ctx context.Context, userID int64) (bool, er
 	// Сохраняем в кеш
 	jsonData, err := json.Marshal(userData)
 	if err == nil {
-		_ = s.redis.Set(ctx, cacheKey, jsonData, 6*time.Hour).Err()
+		_ = s.redis.Set(ctx, cacheKey, jsonData, 5*time.Minute).Err()
 	}
 
 	return s.checkAccessDates(userData), nil

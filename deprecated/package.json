@@ -6,6 +6,6 @@
     "dayjs": "^1.11.13",
     "dotenv": "^16.4.7",
     "ioredis": "^5.4.2",
-    "node-telegram-bot-api": "^0.66.0"
+    "node-telegram-bot-api": "^0.63.0"
   }
 }
