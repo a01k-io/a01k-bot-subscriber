@@ -61,7 +61,7 @@ func (h *CommandHandlers) HandleSubCommand(ctx context.Context, b *bot.Bot, upda
 	if err != nil || !hasAccess {
 		errorMsg, _ := b.SendMessage(ctx, &bot.SendMessageParams{
 			ChatID: chatID,
-			Text:   "No access",
+			Text:   "У вас нет доступа, попробуйте немного позже",
 		})
 		if errorMsg != nil {
 			utils.DeleteMessagesAfterDelay(b, chatID, []int{msg.ID, errorMsg.ID})

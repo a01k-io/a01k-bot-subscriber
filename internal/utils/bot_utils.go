@@ -41,12 +41,16 @@ func CreateInlineKeyboard(chatID int64, messageID int, messageThreadID *int, tar
 		InlineKeyboard: [][]models.InlineKeyboardButton{
 			{
 				{
-					Text: "🔗",
-					URL:  messageURL,
+					Text:              "Перейти",
+					URL:               messageURL,
+					Style:             "primary",
+					IconCustomEmojiID: "5332755643822520488",
 				},
 				{
-					Text:         "❌",
-					CallbackData: callbackData,
+					Text:              "Отписаться",
+					IconCustomEmojiID: "5271934564699226262",
+					CallbackData:      callbackData,
+					Style:             "danger",
 				},
 			},
 		},
